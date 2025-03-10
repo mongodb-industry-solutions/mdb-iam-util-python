@@ -1,17 +1,19 @@
 from pymongo import MongoClient
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Dict, Set
 import re
 
 """
 Class to manage MongoDB user roles and permissions.
 """
-class MongoRoleManager:
 
+
+class MongoRoleManager:
     """
     Initializes MongoRoleManager with a MongoDB connection URI.
 
     @param {str} uri - MongoDB connection string.
     """
+
     def __init__(self, uri: str):
 
         self.uri = uri
@@ -24,7 +26,8 @@ class MongoRoleManager:
     @param {str} uri - MongoDB connection string.
     @return {(str, str)} - A tuple containing (username, password) or (None, None) if not found.
     """
-    def _extract_credentials(self, uri: str) -> (str, str): # type: ignore
+
+    def _extract_credentials(self, uri: str) -> (str, str):  # type: ignore
         match = re.search(r"mongodb\+srv://([^:]+):([^@]+)@", uri)
         if match:
             return match.group(1), match.group(2)
@@ -33,12 +36,15 @@ class MongoRoleManager:
     """
     Establishes a MongoDB connection.
     """
+
     def connect(self):
         if not self.client:
             self.client = MongoClient(self.uri)
+
     """
     Closes the MongoDB connection.
     """
+
     def disconnect(self):
         if self.client:
             self.client.close()
@@ -47,17 +53,20 @@ class MongoRoleManager:
     """
     Retrieves all roles assigned to a user across all databases.
 
-    @param {str} username - (Optional) The username to fetch roles for. If not provided, the username will be extracted from the URI.
-    @return {Dict[str, List[Dict[str, Any]]]} - Dictionary with database names as keys and lists of role documents as values.
+    @param {str} [username] - (Optional) The username to fetch roles for. If not provided, the username will be extracted from the URI.
+    @return {List[str]} - Dictionary with database names as keys and lists of role documents as values.
     """
-    def getUserRoles(self, username: str = None) -> Dict[str, List[Dict[str, Any]]]:
+
+    def getUserRoles(self, username: str = None) -> List[str]:
 
         self.connect()
         rolesInfo = {}
 
         username = username or self.username
         if not username:
-            raise ValueError("Username must be provided or extracted from the connection string.")
+            raise ValueError(
+                "Username must be provided or extracted from the connection string."
+            )
 
         try:
             databases = self.client.list_database_names()
@@ -75,7 +84,18 @@ class MongoRoleManager:
         finally:
             self.disconnect()
 
-        return rolesInfo
+        if "admin" in rolesInfo and isinstance(rolesInfo["admin"], list):
+            return list(
+                set(
+                    [
+                        item["role"]
+                        for item in rolesInfo["admin"]
+                        if isinstance(item, dict) and "role" in item
+                    ]
+                )
+            )
+        else:
+            return []
 
     """
     Retrieves the privileges of a specific role.
@@ -83,38 +103,78 @@ class MongoRoleManager:
     @param {str} roleName - The role name.
     @return {List[Dict[str, Any]]} - List of privileges associated with the role.
     """
-    def getPrivilegesOfRole(self, roleName: str) -> List[Dict[str, Any]]:
 
+    def getPrivilegesOfRole(self, roleName: str) -> List[str]:
         self.connect()
-        privileges = []
+        privileges = set()  # Usamos un conjunto para eliminar duplicados
 
         try:
             adminDb = self.client["admin"]
-            roleInfo = adminDb.command("rolesInfo", roleName, showPrivileges=True)
+            roleInfo = adminDb.command(
+                "rolesInfo", roleName, showPrivileges=True, showBuiltinRoles=True
+            )
 
-            for role in roleInfo.get("roles", []):
-                privileges.extend(role.get("privileges", []))
+            roles = roleInfo.get("roles", [])
+            if roles and isinstance(roles, list):
+                for role in roles:
+                    for privilege in role.get("privileges", []):
+                        actions = privilege.get("actions", [])
+                        if actions and isinstance(actions, list):
+                            privileges.update(
+                                actions
+                            )  # Usamos update para agregar múltiples elementos al conjunto
+
+        except Exception as e:
+            print(f"Error inesperado: {e}")
+
         finally:
             self.disconnect()
 
-        return privileges
-    
+        return list(privileges)
+
     """
     Verifies which permissions are missing or extra in a given set of roles.
 
-    @param {List[str]} roleNames - List of role names to check.
     @param {List[Dict[str, Any]]} requiredPermissions - List of required permissions to compare against.
+    @param {List[str]} roleNames - List of role names to check.
     @return {Dict[str, List[Dict[str, Any]]]} - JSON-style dictionary with 'extraPermissions' and 'missingPermissions'.
     """
-    def verifyPermissions(self, roleNames: List[str], requiredPermissions: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
 
-        currentPermissions = set()
-        for role in roleNames:
-            currentPermissions.update(tuple(p.items()) for p in self.getPrivilegesOfRole(role))
+    def verifyPermissions(
+        self, requiredPermissions: List[str], roleNames: List[str] = None
+    ) -> Dict[str, List[str]]:
+        try:
+            if roleNames is None:
+                roleNames = self.getUserRoles()
 
-        requiredPermissionsSet = set(tuple(p.items()) for p in requiredPermissions)
+            # Use a set for efficient permission storage and lookup
+            currentPermissions: Set[str] = set()
 
-        return {
-            "extraPermissions": [dict(p) for p in currentPermissions - requiredPermissionsSet],
-            "missingPermissions": [dict(p) for p in requiredPermissionsSet - currentPermissions],
-        }
+            # Fetch permissions for each role and update the set
+            for role in roleNames:
+                currentPermissions.update(self.getPrivilegesOfRole(role))
+
+            # Convert required permissions to a set for efficient set operations
+            requiredPermissionsSet: Set[str] = set(requiredPermissions)
+
+            # Calculate extra, missing, and present permissions using set operations
+            extraPermissions: List[str] = list(
+                currentPermissions - requiredPermissionsSet
+            )
+            missingPermissions: List[str] = list(
+                requiredPermissionsSet - currentPermissions
+            )
+            presentPermissions: List[str] = list(
+                requiredPermissionsSet.intersection(currentPermissions)
+            )
+
+            return {
+                "extra": extraPermissions,
+                "missing": missingPermissions,
+                "present": presentPermissions,
+            }
+
+        except Exception as e:
+            # Log the error for debugging purposes (consider using a logging library)
+            print(f"Unexpected error: {e}")
+            return {"extra": [], "missing": []}  # Return empty lists in case of error.
