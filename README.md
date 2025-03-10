@@ -5,3 +5,58 @@ In order to run the python code, follow the below step:
 1. Install the necessary Python packages, by executing the below command: <br>
 ```cd pyhton ```<br>
 ```pip install requirements.txt ```<br>
+
+Role Rectifier is a Python package that helps manage and validate user roles and privileges in MongoDB databases. It allows developers to:
+
+✅ Retrieve all roles assigned to a user across multiple databases.
+✅ Identify custom roles (excluding built-in roles).
+✅ Retrieve detailed privileges of specific roles.
+✅ Verify missing and extra permissions for a given list of required permissions.
+
+This package is designed for system administrators, DevOps engineers, and developers who manage MongoDB access control and want to ensure role consistency and security.
+
+## 📌 Installation
+
+```sh
+pip install user-access-checks
+``` 
+
+Alternatively, install it directly from the source:
+
+```sh
+git clone https://github.com/mongodb-industry-solutions/user-access-checks.git
+cd user-access-checks
+pip install -r requirements.txt
+```
+
+## 🚀 Usage Example
+1. Connect to MongoDB and Retrieve User Roles
+```python
+from src.mongo_role_manager import MongoRoleManager
+
+# Replace with your MongoDB connection string
+connectionString = "mongodb://localhost:27017"
+userName = "testUser"
+
+roleManager = MongoRoleManager(connectionString)
+
+# Get user roles
+print("User roles:")
+userRoles = roleManager.getUserRoles(userName)
+print(userRoles)
+```
+
+
+## Verify Missing & Extra Permissions
+```python
+roleNames = ["readWriteRole"]
+requiredPermissions = [
+    {"resource": {"db": "test", "collection": ""}, "actions": ["find"]},
+    {"resource": {"db": "test", "collection": "users"}, "actions": ["insert"]}
+]
+
+extraPermissions, missingPermissions = roleManager.verifyPermissions(roleNames, requiredPermissions)
+
+print("Extra Permissions:", extraPermissions)
+print("Missing Permissions:", missingPermissions)
+```
