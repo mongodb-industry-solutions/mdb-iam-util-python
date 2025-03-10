@@ -1,5 +1,5 @@
 import pytest
-from src.mongo_role_manager import MongoRoleManager
+from src import MongoRoleManager
 
 connectionString = "mongodb+srv://dorottya:passwordone@solutionsassurance.n0kts.mongodb.net/?retryWrites=true&w=majority&appName=SolutionsAssurance"
 
