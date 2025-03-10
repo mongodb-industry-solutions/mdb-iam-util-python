@@ -35,28 +35,39 @@ pip install -r requirements.txt
 from src.mongo_role_manager import MongoRoleManager
 
 # Replace with your MongoDB connection string
-connectionString = "mongodb://localhost:27017"
-userName = "testUser"
+connectionString = "<CONNECTION_URI>
 
+# Create the role manager instance
 roleManager = MongoRoleManager(connectionString)
 
 # Get user roles
-print("User roles:")
-userRoles = roleManager.getUserRoles(userName)
+userRoles = roleManager.getUserRoles()
+
 print(userRoles)
 ```
 
 
 ## Verify Missing & Extra Permissions
 ```python
-roleNames = ["readWriteRole"]
+
 requiredPermissions = [
-    {"resource": {"db": "test", "collection": ""}, "actions": ["find"]},
-    {"resource": {"db": "test", "collection": "users"}, "actions": ["insert"]}
+    "search",
+    "read",
+    "find",
+    "insert",
+    "update",
+    "remove",
+    "collMod",
 ]
 
-extraPermissions, missingPermissions = roleManager.verifyPermissions(roleNames, requiredPermissions)
+permissions = roleManager.verifyPermissions(requiredPermissions)
 
-print("Extra Permissions:", extraPermissions)
-print("Missing Permissions:", missingPermissions)
+## over-privileged
+print("Extra Permissions:", permissions["extra"])
+
+## under-privilidged
+print("Missing Permissions:", permissions["missing"])
+
+## required permissions
+print("Valid Permissions:", permissions["present"])
 ```
