@@ -4,9 +4,10 @@ setup(
     name="role-rectifier",
     version="0.1.0",
     description="A Python package for MongoDB role rectification",
-    author="Tu Nombre",
-    author_email="tuemail@example.com",
-    packages=find_packages(),
+    author="MongoDB Solutions Assurance Team",
+    author_email="solution.assurance@mongodb.com",
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     install_requires=["pymongo"],
     classifiers=[
         "Programming Language :: Python :: 3",
