@@ -1,19 +1,33 @@
 import pytest
 from src.mongo_role_manager import MongoRoleManager
 
+connectionString = "mongodb+srv://dorottya:passwordone@solutionsassurance.n0kts.mongodb.net/?retryWrites=true&w=majority&appName=SolutionsAssurance"
+
 
 @pytest.fixture
 def roleManager():
-    return MongoRoleManager("mongodb://localhost:27017")
+    return MongoRoleManager(connectionString)
 
 
 def test_verifyPermissions(roleManager):
-    roleNames = ["readWriteRole"]
     requiredPermissions = [
-        {"resource": {"db": "test", "collection": ""}, "actions": ["find"]}
+        "search",
+        "read",
+        "find",
+        "insert",
+        "update",
+        "remove",
+        "collMod",
     ]
+    
+    res = roleManager.verifyPermissions(requiredPermissions)
 
-    extra, missing = roleManager.verifyPermissions(roleNames, requiredPermissions)
+    assert isinstance(res["extra"], list)
+    assert isinstance(res["missing"], list)
+    assert isinstance(res["present"], list)
 
-    assert isinstance(extra, list)
-    assert isinstance(missing, list)
+    assert sorted(res["missing"]) == sorted(["search", "read"])
+    assert sorted(res["present"]) == sorted(
+        ["find", "insert", "update", "remove", "collMod"]
+    )
+    assert len(res["extra"]) > 5
