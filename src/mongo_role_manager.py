@@ -101,7 +101,7 @@ class MongoRoleManager:
     Retrieves the privileges of a specific role.
 
     @param {str} roleName - The role name.
-    @return {List[Dict[str, Any]]} - List of privileges associated with the role.
+    @return {List[str]} - List of privileges associated with the role.
     """
 
     def getPrivilegesOfRole(self, roleName: str) -> List[str]:
@@ -177,4 +177,4 @@ class MongoRoleManager:
         except Exception as e:
             # Log the error for debugging purposes (consider using a logging library)
             print(f"Unexpected error: {e}")
-            return {"extra": [], "missing": []}  # Return empty lists in case of error.
+            return {"extra": [], "missing": [], "present": []}  # Return empty lists in case of error.
