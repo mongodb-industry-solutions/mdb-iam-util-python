@@ -105,7 +105,7 @@ class MongoRoleManager:
 
     def getPrivilegesOfRole(self, roleName: str) -> List[str]:
         self.connect()
-        privileges = set()  # Usamos un conjunto para eliminar duplicados
+        privileges = set()  # Use this type to eliminate duplicate values
 
         try:
             adminDb = self.client["admin"]
@@ -121,7 +121,7 @@ class MongoRoleManager:
                         if actions and isinstance(actions, list):
                             privileges.update(
                                 actions
-                            )  # Usamos update para agregar múltiples elementos al conjunto
+                            )  # Using update to add multiple elements at a time
 
         except Exception as e:
             print(f"Error inesperado: {e}")
