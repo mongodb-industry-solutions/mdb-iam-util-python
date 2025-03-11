@@ -1,7 +1,13 @@
 import pytest
+import os
+
 from src import MongoRoleManager
 
-connectionString = "<CONNECTION_URI>
+db_username = os.environ.get("DB_USERNAME")
+db_password = os.environ.get("DB_PASSWORD")
+db_host = os.environ.get("DB_HOST")
+
+connectionString = f"<CONNECTION_URI>
 
 
 @pytest.fixture
@@ -19,7 +25,7 @@ def test_verifyPermissions(roleManager):
         "remove",
         "collMod",
     ]
-    
+
     res = roleManager.verifyPermissions(requiredPermissions)
 
     assert isinstance(res["extra"], list)
