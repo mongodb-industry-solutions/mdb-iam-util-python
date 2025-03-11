@@ -31,12 +31,17 @@ cd user-access-checks
 mv .env.example .env
 pip install -r requirements.txt
 ```
-## 📌 Test
+## 🔬 Test
+Run tests using pytest:
 ```sh
 pytest
 ``` 
+or with Make 
+```sh
+make test
+``` 
 
-## 🚀 Usage Example
+## 🛠 Usage Example
 1. Connect to MongoDB and Retrieve User Roles
 ```python
 from src.mongo_role_manager import MongoRoleManager
