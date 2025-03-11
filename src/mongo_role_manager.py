@@ -15,10 +15,9 @@ class MongoRoleManager:
     """
 
     def __init__(self, uri: str):
-
         self.uri = uri
         self.client = None
-        self.username, self.password = self._extract_credentials(uri)
+        self.username, self.password = self.extractCredentials(uri)
 
     """
     Extracts the username and password from a MongoDB connection string.
@@ -27,7 +26,7 @@ class MongoRoleManager:
     @return {(str, str)} - A tuple containing (username, password) or (None, None) if not found.
     """
 
-    def _extract_credentials(self, uri: str) -> (str, str):  # type: ignore
+    def extractCredentials(self, uri: str) -> (str, str):  # type: ignore
         match = re.search(r"mongodb\+srv://([^:]+):([^@]+)@", uri)
         if match:
             return match.group(1), match.group(2)
@@ -133,11 +132,11 @@ class MongoRoleManager:
         return list(privileges)
 
     """
-    Verifies which permissions are missing or extra in a given set of roles.
+    Verifies which permissions are missing, present or extra in a given set of roles.
 
-    @param {List[Dict[str, Any]]} requiredPermissions - List of required permissions to compare against.
-    @param {List[str]} roleNames - List of role names to check.
-    @return {Dict[str, List[Dict[str, Any]]]} - JSON-style dictionary with 'extraPermissions' and 'missingPermissions'.
+    @param {List[str]} requiredPermissions - List of required permissions to compare against.
+    @param {List[str]} [roleNames] - Optional list of role names to check.
+    @return {Dict[str, List[str]]} - JSON-style dictionary with 'extra', 'missing' and 'present' permissions.
     """
 
     def verifyPermissions(
@@ -177,4 +176,8 @@ class MongoRoleManager:
         except Exception as e:
             # Log the error for debugging purposes (consider using a logging library)
             print(f"Unexpected error: {e}")
-            return {"extra": [], "missing": [], "present": []}  # Return empty lists in case of error.
+            return {
+                "extra": [],
+                "missing": [],
+                "present": [],
+            }  # Return empty lists in case of error.
