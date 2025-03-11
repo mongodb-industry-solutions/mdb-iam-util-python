@@ -1,5 +1,6 @@
 # MongoDB IAM Utils
-This repository is for checking access privileges for MongoDB configured users.
+This repository is a utility project focused on streamlining IAM processes for MongoDB, leveraging the native driver (Python in this case), with the understanding that similar projects could be developed for other platforms. Its goal is to simplify and accelerate security-related tasks, making IAM management more efficient.
+
 
 In order to run the python code, follow the below step:
 1. Install the necessary Python packages, by executing the below command: 
@@ -44,10 +45,15 @@ make test
 ## 🛠 Usage Example
 1. Connect to MongoDB and Retrieve User Roles
 ```python
-from src.mongo_role_manager import MongoRoleManager
+from src import MongoRoleManager
 
-# Replace with your MongoDB connection string
-connectionString = "mongodb+srv://myuser:itpassword@solutionsassurance.n0kts.mongodb.net/?retryWrites=true&w=majority&appName=SolutionsAssurance"
+# Replace with your MongoDB connection string data
+dbUsername = "db_username"
+dbPassword = "db_password"
+dbHost = "mydb.kts.mongodb.net"
+dbApp = "MyLocalApp"
+
+connectionString = f"mongodb+srv://{dbUsername}:{dbPassword}@{dbHost}/?retryWrites=true&w=majority&appName={dbApp}"
 
 # Create the role manager instance
 roleManager = MongoRoleManager(connectionString)
@@ -60,6 +66,8 @@ print(userRoles)
 
 
 ## 🚀 Verify Missing & Extra Permissions
+Checking access privileges for the user defined in the connection string of the previous example:
+
 ```python
 
 requiredPermissions = [
@@ -80,6 +88,15 @@ print("Extra Permissions:", permissions["extra"])
 ## under-privilidged
 print("Missing Permissions:", permissions["missing"])
 
-## required permissions
+## required-privileged
 print("Valid Permissions:", permissions["present"])
 ```
+
+The provided code snippet demonstrates how to effectively verify and manage user permissions within a MongoDB environment. Utilizing the `verifyPermissions` method, it compares a list of `requiredPermissions` against the actual privileges granted to the user, as determined by their assigned roles. 
+
+This process then categorizes permissions into three distinct groups: 
+- **Extra Permissions:** highlights any privileges exceeding the required set, indicating potential over-privileging.
+- **Missing Permissions:** identifies necessary permissions that are absent, revealing under-privileging.
+- **Valid Permissions:** confirms the required privileges that are correctly assigned. 
+
+This functionality allows for precise auditing and adjustment of user access, ensuring adherence to security best practices and minimizing risks associated with excessive or insufficient permissions.
