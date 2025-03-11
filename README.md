@@ -1,6 +1,5 @@
-# MongoDB IAM Utils
+# MongoDB IAM Utilities for Python
 This repository is a utility project focused on streamlining IAM processes for MongoDB, leveraging the native driver (Python in this case), with the understanding that similar projects could be developed for other platforms. Its goal is to simplify and accelerate security-related tasks, making IAM management more efficient.
-
 
 In order to run the python code, follow the below step:
 1. Install the necessary Python packages, by executing the below command: 
