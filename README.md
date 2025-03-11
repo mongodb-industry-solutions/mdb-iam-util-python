@@ -28,8 +28,13 @@ Alternatively, install it directly from the source:
 ```sh
 git clone https://github.com/mongodb-industry-solutions/user-access-checks.git
 cd user-access-checks
+mv .env.example .env
 pip install -r requirements.txt
 ```
+## 📌 Test
+```sh
+pytest
+``` 
 
 ## 🚀 Usage Example
 1. Connect to MongoDB and Retrieve User Roles
@@ -49,7 +54,7 @@ print(userRoles)
 ```
 
 
-## Verify Missing & Extra Permissions
+## 🚀 Verify Missing & Extra Permissions
 ```python
 
 requiredPermissions = [

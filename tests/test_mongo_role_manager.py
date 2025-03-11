@@ -1,7 +1,9 @@
 import pytest
 import os
-
+from dotenv import load_dotenv
 from src import MongoRoleManager
+
+load_dotenv()
 
 db_username = os.environ.get("DB_USERNAME")
 db_password = os.environ.get("DB_PASSWORD")
