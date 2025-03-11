@@ -42,7 +42,8 @@ make test
 ``` 
 
 ## 🛠 Usage Example
-1. Connect to MongoDB and Retrieve User Roles
+Connect to MongoDB and Retrieve User Roles
+
 ```python
 from src import MongoRoleManager
 
@@ -62,6 +63,7 @@ userRoles = roleManager.getUserRoles()
 
 print(userRoles)
 ```
+This code snippet establishes a connection to a MongoDB database using a constructed connection string, then utilizes a `MongoRoleManager` instance to retrieve the roles assigned to the authenticated user. It serves to programmatically access and display the user's role-based access control within the MongoDB environment, facilitating security audits and role management.
 
 
 ## 🚀 Verify Missing & Extra Permissions
