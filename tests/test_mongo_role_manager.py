@@ -10,7 +10,7 @@ db_password = os.environ.get("DB_PASSWORD")
 db_host = os.environ.get("DB_HOST")
 db_cluster = os.environ.get("DB_CLUSTER")
 
-connectionString = f"<CONNECTION_URI>
+connectionString = f"mongodb+srv://{db_username}:{db_password}@{db_host}/?retryWrites=true&w=majority&appName={db_cluster}"
 
 
 @pytest.fixture
