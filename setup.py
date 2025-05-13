@@ -3,7 +3,7 @@ import shutil
 from setuptools import setup, find_packages  
   
 # Constants  
-MODULE_VERSION = "0.1.4"  
+MODULE_VERSION = "1.0.0"  
 MODULE_NAME = "mongodb_solution_assurance_iam_util"  # Package name  
 PUBLISH_DIR = "publish"  # Temporary directory for staging files  
 SRC_DIR = "src"  # Source directory  
