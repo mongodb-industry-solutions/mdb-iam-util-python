@@ -144,3 +144,11 @@ This process then categorizes permissions into three distinct groups:
 - **Valid Permissions:** confirms the required privileges that are correctly assigned. 
 
 This functionality allows for precise auditing and adjustment of user access, ensuring adherence to security best practices and minimizing risks associated with excessive or insufficient permissions.
+
+## 🔗 Available Plugins
+- [MongoDB IAM Utilities for Node.Js](https://github.com/mongodb-industry-solutions/mdb-iam-util-node), get more details also at [NPM package link](https://www.npmjs.com/package/@mongodb-solution-assurance/iam-util)
+- [MongoDB IAM Utilities for Python](https://github.com/mongodb-industry-solutions/mdb-iam-util-python), get more details also at [PYPI package link](https://pypi.org/project/mongodb-solution-assurance-iam-util)
+- Additional plugins for Java, .NET, and Go (Coming Soon)
+
+## 🔗 Demo Apps
+- [MongoDB Security Utilities for IAM Remediation](https://github.com/mongodb-industry-solutions/mdb-iam-util-demo)
