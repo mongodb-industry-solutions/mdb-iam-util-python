@@ -1,14 +1,7 @@
 # MongoDB IAM Utilities for Python
 This repository is a utility project focused on streamlining IAM processes for MongoDB, leveraging the native driver (Python in this case), with the understanding that similar projects could be developed for other platforms. Its goal is to simplify and accelerate security-related tasks, making IAM management more efficient.
 
-In order to run the python code, follow the below step:
-1. Install the necessary Python packages, by executing the below command: 
-
-    ```shell
-    pip install -r requirements.txt 
-    ```
-
-Role Rectifier is a Python package that helps manage and validate user roles and privileges in MongoDB databases. It allows developers to:
+iam-util (Role Rectifier) is a Python package that helps manage and validate user roles and privileges in MongoDB databases. It allows developers to:
 
 - ✅ Retrieve all roles assigned to a user across multiple databases.
 - ✅ Identify custom roles (excluding built-in roles).
@@ -20,7 +13,7 @@ This package is designed for system administrators, DevOps engineers, and develo
 ## 📌 Installation
 
 ```sh
-pip install user-access-checks
+pip install mongodb-solution-assurance-iam-util
 ``` 
 
 Alternatively, install it directly from the source:

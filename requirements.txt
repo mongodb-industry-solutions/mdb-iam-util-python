@@ -1,3 +1,6 @@
 pymongo==4.11.1
 pytest
 python-dotenv
+twine
+setuptools
+wheel

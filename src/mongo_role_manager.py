@@ -1,11 +1,10 @@
 from pymongo import MongoClient
-from typing import Dict, List, Any, Dict, Set
+from typing import Dict, List, Dict, Set
 import re
 
 """
 Class to manage MongoDB user roles and permissions.
 """
-
 
 class MongoRoleManager:
     """
