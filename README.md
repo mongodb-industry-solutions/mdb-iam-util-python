@@ -14,7 +14,7 @@ This package is designed for system administrators, DevOps engineers, and develo
 
 ```sh
 pip install mongodb-solution-assurance-iam-util
-``` 
+```
 
 Alternatively, install it directly from the source:
 
@@ -28,33 +28,84 @@ pip install -r requirements.txt
 Run tests using pytest:
 ```sh
 pytest
-``` 
-or with Make 
+```
+or with Make
 ```sh
 make test
-``` 
+```
 
 ## 🛠 Usage Example
 Connect to MongoDB and Retrieve User Roles
 
 ```python
-from src import MongoRoleManager
+import os
+from dotenv import load_dotenv  # Import dotenv to load environment variables
+from mongodb_solution_assurance_iam_util import MongoRoleManager  # Import the custom role manager
 
-# Replace with your MongoDB connection string data
-dbUsername = "db_username"
-dbPassword = "db_password"
-dbHost = "mydb.kts.mongodb.net"
-dbApp = "MyLocalApp"
+# Load environment variables from the `.env` file
+# This ensures sensitive values (like credentials) are not hardcoded in the script.
+load_dotenv()
 
-connectionString = f"<CONNECTION_URI>
+# Create the MongoDB connection string using environment variables
+db_username = os.environ.get("DB_USERNAME")  # Retrieve the database username
+db_password = os.environ.get("DB_PASSWORD")  # Retrieve the database password
+db_host = os.environ.get("DB_HOST")          # Retrieve the database host
+db_cluster = os.environ.get("DB_CLUSTER")    # Retrieve the cluster name
 
-# Create the role manager instance
-roleManager = MongoRoleManager(connectionString)
+# Format the connection string required for MongoDB
+connectionString = f"mongodb+srv://{db_username}:{db_password}@{db_host}/?retryWrites=true&w=majority&appName={db_cluster}"
 
-# Get user roles
-userRoles = roleManager.getUserRoles()
+def main():
+    """
+    Main function to handle MongoDB role permissions verification.
+    """
+    # Print the connection string for debugging purposes (optional and for testing purpose only).
+    print("Connection string:", connectionString)
+    # --------------------------------
+    # OUTPUT:
+    # Connection string: mongodb+srv://<username>:<password>@<host>/?retryWrites=true&w=majority&appName=<cluster>
 
-print(userRoles)
+    # Define the list of required permissions that need to be verified
+    required_permissions = [
+        "search",   # Permission to search documents
+        "read",     # Permission to read documents
+        "find",     # Permission to find documents based on a query
+        "insert",   # Permission to insert new documents
+        "update",   # Permission to update existing documents
+        "remove",   # Permission to remove documents
+        "collMod",  # Permission to modify collections
+    ]
+
+    # Initialize the MongoRoleManager with the connection string
+    role_manager = MongoRoleManager(connectionString)
+
+    # Verify that the necessary permissions are available for the database
+    res = role_manager.verifyPermissions(required_permissions)
+
+    # Print the verification result to the console
+    print("--------------------------------")
+    print(res)
+    # --------------------------------
+    # OUTPUT:
+    # {
+    #     'extra': ['viewRole', 'dropCollection', 'killAnyCursor', 'analyze'],
+    #     'missing': ['search', 'read'],
+    #     'present': ['remove', 'update', 'find', 'insert', 'collMod']
+    # }
+
+    # Get user roles
+    userRoles = role_manager.getUserRoles()
+
+    # Print the list of roles associated with the user in the connection string
+    print("--------------------------------")
+    print(userRoles)
+    # OUTPUT:
+    # --------------------------------
+    # ['readWrite', 'read', 'PowerSyncCustomRole']
+
+# Ensure the script runs only when executed directly (not imported as a module)
+if __name__ == "__main__":
+    main()
 ```
 This code snippet establishes a connection to a MongoDB database using a constructed connection string, then utilizes a `MongoRoleManager` instance to retrieve the roles assigned to the authenticated user. It serves to programmatically access and display the user's role-based access control within the MongoDB environment, facilitating security audits and role management.
 
@@ -63,7 +114,6 @@ This code snippet establishes a connection to a MongoDB database using a constru
 Checking access privileges for the user defined in the connection string of the previous example:
 
 ```python
-
 requiredPermissions = [
     "search",
     "read",
@@ -74,7 +124,7 @@ requiredPermissions = [
     "collMod",
 ]
 
-permissions = roleManager.verifyPermissions(requiredPermissions)
+permissions = role_manager.verifyPermissions(requiredPermissions)
 
 ## over-privileged
 print("Extra Permissions:", permissions["extra"])

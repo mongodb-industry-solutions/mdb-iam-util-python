@@ -1,0 +1,6 @@
+# Include only necessary files
+include src/__init__.py
+include src/mongo_role_manager.py
+  
+# Exclude unwanted files
+exclude tests/*
